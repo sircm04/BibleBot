@@ -20,12 +20,11 @@ client = commands.Bot(command_prefix = '!')
 p = re.compile(r'(?<!\\)(?P<book>Genesis|Exodus|Leviticus|Numbers|Deuteronomy|Joshua|Judges'
             r'|Ruth|(?:1|I|2|II)(?:\s+)?Samuel|(?:1|I|II)(?:\s+)?Kings|(?:1|I|2|II)(?:\s+)?Chronicles'
             r'|Ezra|Nehemiah|Esther|Job|Psalm|Proverbs|Ecclesiastes|Song(?:\s+)?of(?:\s+)?(Solomon|Songs)|Isaiah'
-            r'|Jeremiah|Lamentations|Ezekiel|Daniel|Hosea|Joel|Amos|Obadiah|Jonah|Micah'
-            r'|Nahum|Habakkuk|Zephaniah|Haggai|Zechariah|Malachi|Matthew|Mark|Luke|Acts'
-            r'|Romans|(?:1|I|2|II)(?:\s+)?Corinthians|Galatians|Ephesians|Philippians'
-            r'|Colossians|(?:1|I|2|II)(?:\s+)?Thessalonians|(?:1|I|2|II)(?:\s+)?Timothy|Titus|Philemon'
-            r'|Hebrews|James|(?:1|I|2|II)(?:\s+)?Peter|(?:1|I|2|II|3|III)(?:\s+)?John|John|Jude|Revelation|(?:1|I|2|II|3|III)(?:\s+)[\w]+[.]+)'
-            r'(?:\s+)(?P<chapter>\d+)(?!-)(?::(?P<verse>\d+))?(?:-(?P<endverse>\d+))?(?!:-)(?:\s+(?P<version>\w+))?(?!-)(?!:)',
+            r'|Jeremiah|Lamentations|Ezekiel|Daniel|Hosea|Joel|Amos|Obadiah|Jonah|Micah|Nahum|Habakkuk|Zephaniah'
+            r'|Haggai|Zechariah|Malachi|Matthew|Mark|Luke|Acts|Romans|(?:1|I|2|II)(?:\s+)?Corinthians|Galatians|Ephesians'
+            r'|Philippians|Colossians|(?:1|I|2|II)(?:\s+)?Thessalonians|(?:1|I|2|II)(?:\s+)?Timothy|Titus|Philemon|Hebrews'
+            r'|James|(?:1|I|2|II)(?:\s+)?Peter|(?:1|I|2|II|3|III)(?:\s+)?John|John|Jude|Revelation|(?:(?:1|I|2|II|3|III)\s+)?[\w]+[.]+)(?:\s+)?'
+            r'(?P<chapter>\d+)(?!-)(?::(?P<verse>\d+))?(?:-(?P<endverse>\d+))?(?!:-)(?:\s+(?P<version>\w+))?(?!-)(?!:)',
             flags = re.IGNORECASE)
 
 DEFAULT_VERSION = 'ESV'
