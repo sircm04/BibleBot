@@ -1,11 +1,12 @@
 import requests
+import bs4
 from bs4 import BeautifulSoup
 
 from itertools import chain
 
 import re
 
-p = re.compile(r'(?P<number>\d+)\s(?P<verse>.*)',
+p = re.compile(r'(?:(?P<number>\d+)(?:\s+)?)?(?P<verse>.*)',
             flags = re.IGNORECASE)
 
 
@@ -15,29 +16,43 @@ def search(verse, version, DEFAULT_VERSION) -> (dict, str, str):
     
     # Switch to default version if inputted version is invalid
     for tag in sp.find_all('legend'):
-        if tag.text.strip() == 'Select version(s)':
+        if isinstance(tag, bs4.element.Tag) and tag.text.strip() == 'Select version(s)':
             version = DEFAULT_VERSION
             sp = query(verse, version)
             break
 
     # Return None if verse is invalid
-    for tag in sp.find_all('h3'):
-        if tag.text == 'No results found.':
+    if (sp.find(class_ = 'results-info')):
+        return None
+
+    for tag in sp.find_all('p'):
+        if isinstance(tag, bs4.element.Tag) and tag.text.startswith('Sorry'):
             return None
 
-    verse = None
-    version = None
-    for i, tag in enumerate(sp.find_all(class_ = 'dropdown-display-text')):
-        if i == 0:
-            verse = tag.text
-        if i == 1:
-            version = tag.text
-    
+    for tag in sp.find('h3'):
+        if isinstance(tag, bs4.element.Tag) and tag.text.startswith('No results found.'):
+            return None
+
+    dropdown = sp.find_all(class_ = 'dropdown-display-text')
+    verse = dropdown[0].text.strip()
+    version = dropdown[1].text.strip()
+
     dictionary = {}
-    for i, tag in enumerate(chain(sp.find_all(class_ = 'chapternum'), sp.find_all(class_ = 'versenum'))):
-        for m in re.finditer(p, tag.parent.text.strip()):
-            dictionary[m.group('number')] = (m.group('verse'))
-    
+    num = 1
+    for tag_p in sp.find(class_ = 'passage-cols').find_all('p'):
+        for tag in tag_p.findChildren(recursive = False):
+            chapternum = tag.find(class_ = 'chapternum')
+            if chapternum:
+                chapternum.string = '1'
+
+            for m in re.finditer(p, tag.text.strip()):
+                num = m.group('number') or num
+                    
+                if dictionary.get(num):
+                    dictionary[num] += ' ' + m.group('verse')
+                else:
+                    dictionary[num] = m.group('verse')
+
     return (dictionary, verse, version)
 
 # Query bible-gateway

@@ -19,12 +19,12 @@ client = commands.Bot(command_prefix = '!')
 # Regex for finding and parsing verses
 p = re.compile(r'(?<!\\)(?P<book>Genesis|Exodus|Leviticus|Numbers|Deuteronomy|Joshua|Judges'
             r'|Ruth|(?:1|I|2|II)(?:\s+)?Samuel|(?:1|I|II)(?:\s+)?Kings|(?:1|I|2|II)(?:\s+)?Chronicles'
-            r'|Ezra|Nehemiah|Esther|Job|Psalm|Proverbs|Ecclesiastes|Song(?:\s+)?of(?:\s+)?Solomon|Isaiah'
+            r'|Ezra|Nehemiah|Esther|Job|Psalm|Proverbs|Ecclesiastes|Song(?:\s+)?of(?:\s+)?(Solomon|Songs)|Isaiah'
             r'|Jeremiah|Lamentations|Ezekiel|Daniel|Hosea|Joel|Amos|Obadiah|Jonah|Micah'
             r'|Nahum|Habakkuk|Zephaniah|Haggai|Zechariah|Malachi|Matthew|Mark|Luke|Acts'
             r'|Romans|(?:1|I|2|II)(?:\s+)?Corinthians|Galatians|Ephesians|Philippians'
             r'|Colossians|(?:1|I|2|II)(?:\s+)?Thessalonians|(?:1|I|2|II)(?:\s+)?Timothy|Titus|Philemon'
-            r'|Hebrews|James|(?:1|I|2|II)(?:\s+)?Peter|(?:1|I|2|II|3|III)(?:\s+)?John|John|Jude|Revelation)'
+            r'|Hebrews|James|(?:1|I|2|II)(?:\s+)?Peter|(?:1|I|2|II|3|III)(?:\s+)?John|John|Jude|Revelation|(?:1|I|2|II|3|III)(?:\s+)[\w]+[.]+)'
             r'(?:\s+)(?P<chapter>\d+)(?!-)(?::(?P<verse>\d+))?(?:-(?P<endverse>\d+))?(?!:-)(?:\s+(?P<version>\w+))?(?!-)(?!:)',
             flags = re.IGNORECASE)
 
@@ -56,13 +56,13 @@ async def on_message(message):
             raw_verse += f":{ verse }"
         if end_verse:
             raw_verse += f"-{ end_verse }"
-        
+
         passage = ''
         response = bible_gateway.search(raw_verse, version, DEFAULT_VERSION)
-
+        
         if response is not None:
             for i, key in enumerate(response[0]):
-                passage += (' ' if (i > 0) else '') + ('<**' + key + '**> ' + text_purification.purify_verse_text(response[0][key]))
+                passage += (' ' if (i > 0) else '') + ('<**' + str(key) + '**> ' + text_purification.purify_verse_text(response[0][key]))
         
             if len(passage) > 2048:
                 await message.channel.send('That passage was too large to grab, sorry...')
