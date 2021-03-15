@@ -62,7 +62,7 @@ async def on_message(message):
             else:
                 embed = discord.Embed(title = verse.title, description = verse.text, color = 0x6662E2)
                 embed.set_author(name = f'{ verse.passage } - { verse.version }')
-                embed.set_footer(text = 'PythonBot v0.2', icon_url = 'https://discord.com/assets/6debd47ed13483642cf09e832ed0bc1b.png')
+                embed.set_footer(text = 'BibleBot v0.2', icon_url = 'https://discord.com/assets/6debd47ed13483642cf09e832ed0bc1b.png')
                 await message.channel.send(embed = embed)
 
     await client.process_commands(message)
