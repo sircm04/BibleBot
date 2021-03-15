@@ -8,19 +8,17 @@ from dotenv import load_dotenv
 import re
 
 from interfaces import bible_gateway
-from utils import text_purification
 
 # Load Discord token from .env file
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
 # Regex for finding and parsing verses
-p = re.compile(r'(?<!\\)(?P<book>Genesis|Exodus|Leviticus|Numbers|Deuteronomy|Joshua|Judges'
-            r'|Ruth|(?:1|I|2|II)(?:\s+)?Samuel|(?:1|I|II)(?:\s+)?Kings|(?:1|I|2|II)(?:\s+)?Chronicles'
-            r'|Ezra|Nehemiah|Esther|Job|Psalm|Proverbs|Ecclesiastes|Song(?:\s+)?of(?:\s+)?(Solomon|Songs)|Isaiah'
-            r'|Jeremiah|Lamentations|Ezekiel|Daniel|Hosea|Joel|Amos|Obadiah|Jonah|Micah|Nahum|Habakkuk|Zephaniah'
-            r'|Haggai|Zechariah|Malachi|Matthew|Mark|Luke|Acts|Romans|(?:1|I|2|II)(?:\s+)?Corinthians|Galatians|Ephesians'
-            r'|Philippians|Colossians|(?:1|I|2|II)(?:\s+)?Thessalonians|(?:1|I|2|II)(?:\s+)?Timothy|Titus|Philemon|Hebrews'
+p = re.compile(r'(?<!\\)(?P<book>Genesis|Exodus|Leviticus|Numbers|Deuteronomy|Joshua|Judges|Ruth|(?:1|I|2|II)(?:\s+)?Samuel'
+            r'|(?:1|I|II)(?:\s+)?Kings|(?:1|I|2|II)(?:\s+)?Chronicles|Ezra|Nehemiah|Esther|Job|Psalm|Proverbs|Ecclesiaste'
+            r'|Song(?:\s+)?of(?:\s+)?(Solomon|Songs)|Isaiah|Jeremiah|Lamentations|Ezekiel|Daniel|Hosea|Joel|Amos|Obadiah|Jonah'
+            r'|Micah|Nahum|Habakkuk|Zephaniah|Haggai|Zechariah|Malachi|Matthew|Mark|Luke|Acts|Romans|(?:1|I|2|II)(?:\s+)?Corinthians'
+            r'|Galatians|Ephesians|Philippians|Colossians|(?:1|I|2|II)(?:\s+)?Thessalonians|(?:1|I|2|II)(?:\s+)?Timothy|Titus|Philemon|Hebrews'
             r'|James|(?:1|I|2|II)(?:\s+)?Peter|(?:1|I|2|II|3|III)(?:\s+)?John|John|Jude|Revelation|(?:(?:1|I|2|II|3|III)\s+)?[\w]+[.]+)(?:\s+)?'
             r'(?P<chapter>\d+)(?!-)(?::(?P<verse>\d+))?(?:-(?P<endverse>\d+))?(?!:-)(?:\s+(?P<version>\w+))?(?!-)(?!:)',
             flags = re.IGNORECASE)
@@ -45,29 +43,26 @@ async def on_message(message):
     for m in re.finditer(p, message.content):
         book = m.group('book').title()
         chapter = m.group('chapter')
-        verse = m.group('verse')
+        start_verse = m.group('verse')
         end_verse = m.group('endverse')
         version = m.group('version') or DEFAULT_VERSION
         
-        raw_verse = f"{ book } { chapter }"
+        reference = f"{ book } { chapter }"
 
-        if verse:
-            raw_verse += f":{ verse }"
+        if start_verse:
+            reference += f":{ start_verse }"
             if end_verse:
-                raw_verse += f"-{ end_verse }"
+                reference += f"-{ end_verse }"
 
-        passage = ''
-        response = bible_gateway.search(raw_verse, version, DEFAULT_VERSION)
+        verse = bible_gateway.search(reference, version)
         
-        if response is not None:
-            for i, key in enumerate(response[0]):
-                passage += (' ' if (i > 0) else '') + ('<**' + str(key) + '**> ' + text_purification.purify_verse_text(response[0][key]))
-        
-            if len(passage) > 2048:
+        if verse is not None:
+            if len(verse.text) > 2048:
                 await message.channel.send('That passage was too large to grab, sorry...')
             else:
-                embed = discord.Embed(title = f'{ response[1] } - { response[2] }', description = f'{ passage }', color = 0x6662E2)
-                embed.set_footer(text = 'PythonBot v0.1', icon_url = 'https://discord.com/assets/6debd47ed13483642cf09e832ed0bc1b.png')
+                embed = discord.Embed(title = verse.title, description = verse.text, color = 0x6662E2)
+                embed.set_author(name = f'{ verse.passage } - { verse.version }')
+                embed.set_footer(text = 'PythonBot v0.2', icon_url = 'https://discord.com/assets/6debd47ed13483642cf09e832ed0bc1b.png')
                 await message.channel.send(embed = embed)
 
     await client.process_commands(message)
