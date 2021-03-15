@@ -20,7 +20,7 @@ p = re.compile(r'(?<!\\)(?P<book>Genesis|Exodus|Leviticus|Numbers|Deuteronomy|Jo
             r'|Micah|Nahum|Habakkuk|Zephaniah|Haggai|Zechariah|Malachi|Matthew|Mark|Luke|Acts|Romans|(?:1|I|2|II)(?:\s+)?Corinthians'
             r'|Galatians|Ephesians|Philippians|Colossians|(?:1|I|2|II)(?:\s+)?Thessalonians|(?:1|I|2|II)(?:\s+)?Timothy|Titus|Philemon|Hebrews'
             r'|James|(?:1|I|2|II)(?:\s+)?Peter|(?:1|I|2|II|3|III)(?:\s+)?John|John|Jude|Revelation|(?:(?:1|I|2|II|3|III)\s+)?[\w]+[.]+)(?:\s+)?'
-            r'(?P<chapter>\d+)(?!-)(?::(?P<verse>\d+))?(?:-(?P<endverse>\d+))?(?!:-)(?:\s+(?P<version>(?:\w+(?!\|))|(?:\[[\w\|]+\])))?(?!-)(?!:)',
+            r'(?P<chapter>\d+)(?!-)(?::(?P<verse>\d+))?(?:-(?P<endverse>\d+))?(?!:-)(?:(?:\s+)?(?P<version>(?:\w+(?!\|))|(?:\[[\w\|]+\])))?(?!-)(?!:)',
             flags = re.IGNORECASE)
 
 p2 = re.compile(r'(\w+)(?:\|)?', flags = re.IGNORECASE)
