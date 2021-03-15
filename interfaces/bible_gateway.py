@@ -11,7 +11,7 @@ p = re.compile(r'(?:(?P<number>\d+)(?:\s+)?)?(?P<verse>.*)',
 
 
 # Use web-scraping to get passage-data from biblegateway.com
-def search(verse, version, DEFAULT_VERSION) -> (dict, str, str):
+def search(verse, version, DEFAULT_VERSION):
     sp = query(verse, version)
     
     # Switch to default version if inputted version is invalid
@@ -53,9 +53,9 @@ def search(verse, version, DEFAULT_VERSION) -> (dict, str, str):
                 else:
                     dictionary[num] = m.group('verse')
 
-    return (dictionary, verse, version)
+    return dictionary, verse, version
 
 # Query bible-gateway
-def query(verse, version) -> BeautifulSoup:
+def query(verse, version):
     response = requests.get(f'https://www.biblegateway.com/quicksearch/?search={ verse }&version={ version }&searchtype=all&limit=50000&interface=print')
     return BeautifulSoup(response.content, 'html.parser')

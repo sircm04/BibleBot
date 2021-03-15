@@ -14,8 +14,6 @@ from utils import text_purification
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-client = commands.Bot(command_prefix = '!')
-
 # Regex for finding and parsing verses
 p = re.compile(r'(?<!\\)(?P<book>Genesis|Exodus|Leviticus|Numbers|Deuteronomy|Joshua|Judges'
             r'|Ruth|(?:1|I|2|II)(?:\s+)?Samuel|(?:1|I|II)(?:\s+)?Kings|(?:1|I|2|II)(?:\s+)?Chronicles'
@@ -28,6 +26,8 @@ p = re.compile(r'(?<!\\)(?P<book>Genesis|Exodus|Leviticus|Numbers|Deuteronomy|Jo
             flags = re.IGNORECASE)
 
 DEFAULT_VERSION = 'ESV'
+
+client = commands.Bot(command_prefix = '!')
 
 @client.event
 async def on_ready():
@@ -53,8 +53,8 @@ async def on_message(message):
 
         if verse:
             raw_verse += f":{ verse }"
-        if end_verse:
-            raw_verse += f"-{ end_verse }"
+            if end_verse:
+                raw_verse += f"-{ end_verse }"
 
         passage = ''
         response = bible_gateway.search(raw_verse, version, DEFAULT_VERSION)
