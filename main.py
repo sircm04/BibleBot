@@ -47,14 +47,14 @@ async def on_message(message):
         end_verse = m.group('endverse')
         version = m.group('version') or DEFAULT_VERSION
         
-        reference = f"{ book } { chapter }"
+        reference = f'{ book } { chapter }'
 
         if start_verse:
-            reference += f":{ start_verse }"
+            reference += f':{ start_verse }'
             if end_verse:
-                reference += f"-{ end_verse }"
+                reference += f'-{ end_verse }'
 
-        verse = bible_gateway.search(reference, version)
+        verse = bible_gateway.search(reference, version, False)
         
         if verse is not None:
             if len(verse.text) > 2048:

@@ -6,12 +6,14 @@ from bs4 import BeautifulSoup
 from verse import Verse
 from utils import text_purification
 
-def search(reference, version):
+def search(reference, version, indent):
     try:
         response = requests.get(f'https://www.biblegateway.com/quicksearch/?search={ reference }&version={ version }&searchtype=all&limit=50000&interface=print')
         sp = BeautifulSoup(response.content, 'html.parser')
 
         container = sp.find(class_ = 'passage-cols')
+
+        delimiter = '\n' if indent else ' '
 
         for tag in container.find_all(class_ = 'chapternum'):
             tag.string = '<**1**> '
@@ -20,7 +22,7 @@ def search(reference, version):
             tag.string = f'<**{ tag.text[0:-1] }**> '
 
         for tag in container.find_all('br'):
-            tag.insert_before(sp.new_string('\n'))
+            tag.insert_before(sp.new_string(delimiter))
             tag.decompose()
 
         for tag in container.find_all('crossreference'):
@@ -29,9 +31,13 @@ def search(reference, version):
         for tag in container.find_all('footnote'):
             tag.decompose()
 
+        if not indent:
+            for tag in container.find_all(class_ = 'indent-1-breaks'):
+                tag.string = ' '
+
         passage = sp.find(class_ = 'bcv').text
         title = ' / '.join([tag.text.strip() for tag in container.find_all('h3')])
-        text = '\n'.join([tag.text.strip() for tag in container.find_all('p')])
+        text = delimiter.join([tag.text.strip() for tag in container.find_all('p')])
 
         dropdown = sp.find_all(class_ = 'dropdown-display-text')
 
