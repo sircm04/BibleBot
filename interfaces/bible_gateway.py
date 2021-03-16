@@ -16,10 +16,10 @@ def search(reference, version, indent, titles):
         delimiter = '\n' if indent else ' '
 
         for tag in container.find_all(class_ = 'chapternum'):
-            tag.string = ('  ' if indent else '') + '󠀀󠀀**1**󠀀󠀀󠀀󠀀 󠀀󠀀󠀀󠀀 󠀀󠀀󠀀󠀀'
+            tag.string = '<󠀀󠀀**1**> '
 
         for tag in container.find_all(class_ = 'versenum'):
-            tag.string = ('  ' if indent else '') + f'**{ tag.text[0:-1] }**󠀀󠀀 󠀀󠀀󠀀󠀀 󠀀󠀀'
+            tag.string = f'<**{ tag.text[0:-1] }**>󠀀󠀀 󠀀󠀀󠀀󠀀󠀀󠀀󠀀󠀀󠀀'
 
         for tag in container.find_all('br'):
             tag.insert_before(sp.new_string(delimiter))
