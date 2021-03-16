@@ -16,10 +16,10 @@ def search(reference, version, indent, titles):
         delimiter = '\n' if indent else ' '
 
         for tag in container.find_all(class_ = 'chapternum'):
-            tag.string = '<**1**> '
+            tag.string = ('  ' if indent else '') + '󠀀󠀀**1**󠀀󠀀󠀀󠀀 󠀀󠀀󠀀󠀀 󠀀󠀀󠀀󠀀'
 
         for tag in container.find_all(class_ = 'versenum'):
-            tag.string = f'<**{ tag.text[0:-1] }**> '
+            tag.string = ('  ' if indent else '') + f'**{ tag.text[0:-1] }**󠀀󠀀 󠀀󠀀󠀀󠀀 󠀀󠀀'
 
         for tag in container.find_all('br'):
             tag.insert_before(sp.new_string(delimiter))
@@ -32,7 +32,7 @@ def search(reference, version, indent, titles):
             tag.decompose()
 
         for tag in container.find_all('h3'):
-            tag.string = f'**{ tag.string }**'
+            tag.string = f'**{ tag.text }**'
 
         if not indent:
             for tag in container.find_all(class_ = 'indent-1-breaks'):
