@@ -2,12 +2,14 @@ import os
 
 import discord
 from discord.ext import commands
+from discord.ext import menus
 
 from dotenv import load_dotenv
 
 import re
 
 from interfaces import bible_gateway
+import search_source
 
 BIBLE_BOT_VERSION = 'v0.4'
 
@@ -76,12 +78,17 @@ async def on_message(message):
 
 @client.command(description = 'Searches the Bible')
 async def search(ctx, *arguments):
-    query = arguments[:len(arguments) - 1]
-    embed = discord.Embed(title = 'Search results for: \'' + ' '.join(query) + '\'', color = 0x7289da)
-    for result in bible_gateway.search(query, arguments[len(arguments) - 1], 5):
-        embed.add_field(name = result[0], value = result[1])
-    embed.set_footer(text = f'BibleBot { BIBLE_BOT_VERSION }', icon_url = 'https://cdn.discordapp.com/avatars/812508314046562334/4a81c5c4bfb245a225512896745c49e2.webp')
-    await ctx.send(embed = embed)
+    query = arguments[:len(arguments) - 1]     
+    results = bible_gateway.search(query, arguments[len(arguments) - 1])
+    m = menus.MenuPages(source = search_source.SearchSource(results, query, BIBLE_BOT_VERSION), clear_reactions_after = True)
+    await m.start(ctx)
+
+@client.command(description = 'Sets the preferred bible translation')
+async def setversion(ctx, version):
+    global DEFAULT_VERSION
+    DEFAULT_VERSION = version
+    await ctx.send(f'Set default version to { version }!')
+
 
 @client.command(description = 'Checks the latency')
 async def ping(ctx):
