@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 import re
 
 from interfaces import bible_gateway
-import search_source
+import search_paginator
 
 BIBLE_BOT_VERSION = 'v0.4'
 
@@ -35,7 +35,7 @@ client = commands.Bot(command_prefix = '!')
 
 @client.event
 async def on_ready():
-    await client.change_presence(activity=discord.Game(name=f'!help { BIBLE_BOT_VERSION }'))
+    await client.change_presence(activity=discord.Game(name=f'{ client.command_prefix }help { BIBLE_BOT_VERSION }'))
     print(f'{ client.user } has connected to Discord!')
 
 @client.event
@@ -80,7 +80,7 @@ async def on_message(message):
 async def search(ctx, *arguments):
     query = arguments[:len(arguments) - 1]     
     results = bible_gateway.search(query, arguments[len(arguments) - 1])
-    m = menus.MenuPages(source = search_source.SearchSource(results, query, BIBLE_BOT_VERSION), clear_reactions_after = True)
+    m = menus.MenuPages(source = search_paginator.SearchPaginator(results, query, BIBLE_BOT_VERSION), clear_reactions_after = True)
     await m.start(ctx)
 
 @client.command(description = 'Sets the preferred bible translation')
@@ -93,9 +93,5 @@ async def setversion(ctx, version):
 @client.command(description = 'Checks the latency')
 async def ping(ctx):
     await ctx.send(f'Pong! { round(client.latency * 1000) }ms ')
-
-@client.command(description = 'Clears previous messages')
-async def clear(ctx, amount = 5):
-    await ctx.channel.purge(limit = amount)
 
 client.run(TOKEN)
