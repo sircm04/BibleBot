@@ -67,7 +67,7 @@ async def on_message(message):
                 if len(verse.text) > 2048:
                     await message.channel.send('That passage was too large to grab, sorry...')
                 else:
-                    embed = discord.Embed(title = verse.passage, description = verse.text, color = 0x6662E2)
+                    embed = discord.Embed(title = verse.passage, description = verse.text, color = 0x7289da)
                     embed.set_author(name = verse.version)
                     embed.set_footer(text = f'BibleBot { BIBLE_BOT_VERSION }', icon_url = 'https://cdn.discordapp.com/avatars/812508314046562334/4a81c5c4bfb245a225512896745c49e2.webp')
                     await message.channel.send(embed = embed)
