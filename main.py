@@ -52,7 +52,7 @@ async def on_message(message):
         end_verse = m.group('endverse')
         version = m.group('version') or DEFAULT_VERSION
         versions = [m2.group(0) for m2 in re.finditer(p2, version)]
-        
+
         reference = f'{ book } { chapter }'
 
         if start_verse:
