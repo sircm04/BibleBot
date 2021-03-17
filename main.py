@@ -63,6 +63,12 @@ async def on_message(message):
                 reference += f'-{ end_verse }'
 
         for ver in versions:
+            if not bible_gateway.is_valid_version(ver):
+                if len(versions) == 1:
+                    ver = DEFAULT_VERSION
+                else:
+                    break
+
             verse = bible_gateway.search_verse(reference, ver, True, True)
 
             if verse is not None:
@@ -78,8 +84,13 @@ async def on_message(message):
 
 @client.command(description = 'Searches the Bible')
 async def search(ctx, *arguments):
-    query = arguments[:len(arguments) - 1]     
-    results = bible_gateway.search(query, arguments[len(arguments) - 1])
+    version = arguments[len(arguments) - 1]
+    if bible_gateway.is_valid_version(version):
+        query = arguments[:len(arguments) - 1]
+    else:
+        query = arguments
+        version = DEFAULT_VERSION
+    results = bible_gateway.search(query, version)
     m = menus.MenuPages(source = search_paginator.SearchPaginator(results, query, BIBLE_BOT_VERSION), clear_reactions_after = True)
     await m.start(ctx)
 

@@ -3,8 +3,12 @@ import requests
 import bs4
 from bs4 import BeautifulSoup
 
+import re
+
 from verse import Verse
 from utils import text_purification
+
+p = re.compile(r'(?P<version>[\w\s]+)(?:\((?P<abbreviation>[\w\s]+)\))?', flags = re.IGNORECASE)
 
 def search(query, version, limit = 50000):
     try:
@@ -22,7 +26,7 @@ def search(query, version, limit = 50000):
             result = [row.find(class_ = 'bible-item-title'),
                         row.find(class_ = 'bible-item-text')]
             
-            if (result[0] and result[1]):
+            if result[0] and result[1]:
                 result[0] = result[0].text.strip()
                 result[1] = text_purification.purify_verse_text(result[1].text.strip())
 
@@ -78,3 +82,13 @@ def search_verse(reference, version, indent, titles):
     except Exception as e:
         print(e.message, e.args)
         return None
+
+def is_valid_version(input):
+    response = requests.get(f'https://www.biblegateway.com/passage/?search=John 3:16&version={ input }&interface=print')
+    sp = BeautifulSoup(response.content, 'html.parser')
+
+    legend = sp.find('legend')
+    if legend:
+        return not legend.text.strip() == 'Enter passage(s)'
+    else:
+        return True
