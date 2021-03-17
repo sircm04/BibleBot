@@ -6,7 +6,34 @@ from bs4 import BeautifulSoup
 from verse import Verse
 from utils import text_purification
 
-def search(reference, version, indent, titles):
+def search(query, version, limit = 50000):
+    try:
+        response = requests.get(f'https://www.biblegateway.com/quicksearch/?search=${ query }&version=${ version }&searchtype=all&limit={ limit }&interface=print')
+        sp = BeautifulSoup(response.content, 'html.parser')
+
+        results = []
+
+        for row in sp.find_all(class_ = 'row'):
+            for tag in row.find_all(class_ = 'bible-item-extras', recursive = True):
+                tag.decompose()
+            for tag in row.find_all('h3', recursive = True):
+                tag.decompose()
+
+            result = [row.find(class_ = 'bible-item-title'),
+                        row.find(class_ = 'bible-item-text')]
+            
+            if (result[0] and result[1]):
+                result[0] = result[0].text.strip()
+                result[1] = text_purification.purify_verse_text(result[1].text.strip())
+
+                results.append(result)
+
+        return results
+    except Exception as e:
+        print(e.message, e.args)
+        return None
+
+def search_verse(reference, version, indent, titles):
     try:
         response = requests.get(f'https://www.biblegateway.com/passage/?search={ reference }&version={ version }&interface=print')
         sp = BeautifulSoup(response.content, 'html.parser')

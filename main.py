@@ -61,7 +61,7 @@ async def on_message(message):
                 reference += f'-{ end_verse }'
 
         for ver in versions:
-            verse = bible_gateway.search(reference, ver, True, True)
+            verse = bible_gateway.search_verse(reference, ver, True, True)
 
             if verse is not None:
                 if len(verse.text) > 2048:
@@ -74,12 +74,21 @@ async def on_message(message):
 
     await client.process_commands(message)
 
+@client.command(description = 'Searches the Bible')
+async def search(ctx, *arguments):
+    query = arguments[:len(arguments) - 1]
+    embed = discord.Embed(title = 'Search results for: \'' + ' '.join(query) + '\'', color = 0x7289da)
+    for result in bible_gateway.search(query, arguments[len(arguments) - 1], 5):
+        embed.add_field(name = result[0], value = result[1])
+    embed.set_footer(text = f'BibleBot { BIBLE_BOT_VERSION }', icon_url = 'https://cdn.discordapp.com/avatars/812508314046562334/4a81c5c4bfb245a225512896745c49e2.webp')
+    await ctx.send(embed = embed)
+
 @client.command(description = 'Checks the latency')
 async def ping(ctx):
     await ctx.send(f'Pong! { round(client.latency * 1000) }ms ')
 
 @client.command(description = 'Clears previous messages')
-async def clear(ctx, amount: int = 5):
+async def clear(ctx, amount = 5):
     await ctx.channel.purge(limit = amount)
 
 client.run(TOKEN)
