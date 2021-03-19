@@ -3,12 +3,8 @@ import requests
 import bs4
 from bs4 import BeautifulSoup
 
-import re
-
 from verse import Verse
 from utils import text_purification
-
-p = re.compile(r'(?P<version>[\w\s]+)(?:\((?P<abbreviation>[\w\s]+)\))?', flags = re.IGNORECASE)
 
 def search(query, version, limit = 50000):
     try:
@@ -44,6 +40,10 @@ def search_verse(reference, version, indent, titles):
 
         container = sp.find(class_ = 'passage-cols')
 
+        h3 = sp.find('h3')
+        if h3 and h3.text.strip() == 'No results found.':
+            return None
+        
         delimiter = '\n' if indent else ' '
 
         for tag in container.find_all(class_ = 'chapternum'):
@@ -89,6 +89,6 @@ def is_valid_version(input):
 
     legend = sp.find('legend')
     if legend:
-        return not legend.text.strip() == 'Enter passage(s)'
+        return legend.text.strip() != 'Enter passage(s)'
     else:
         return True
