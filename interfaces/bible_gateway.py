@@ -1,5 +1,7 @@
 import requests
 
+from functools import lru_cache
+
 import bs4
 from bs4 import BeautifulSoup
 
@@ -83,6 +85,7 @@ def search_verse(reference, version, indent, titles):
         print(e.message, e.args)
         return None
 
+@lru_cache
 def is_valid_version(input):
     response = requests.get(f'https://www.biblegateway.com/passage/?search=John 3:16&version={ input }&interface=print')
     sp = BeautifulSoup(response.content, 'html.parser')
