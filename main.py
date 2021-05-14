@@ -37,7 +37,7 @@ slash = SlashCommand(client, sync_commands = True)
 
 @client.event
 async def on_ready():
-    await client.change_presence(activity = discord.Game(name=f'{ client.command_prefix }help { BIBLE_BOT_VERSION }'))
+    await client.change_presence(activity = discord.Game(name=BIBLE_BOT_VERSION))
     print(f'{ client.user } has connected to Discord!')
 
 @client.event
