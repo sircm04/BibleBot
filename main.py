@@ -2,6 +2,7 @@ import os
 
 import discord
 from discord.ext import commands
+from discord_slash import SlashCommand, SlashContext
 from discord.ext import menus
 
 from dotenv import load_dotenv
@@ -31,11 +32,12 @@ p2 = re.compile(r'(\w+)(?:\|)?', flags = re.IGNORECASE)
 
 DEFAULT_VERSION = 'ESV'
 
-client = commands.Bot(command_prefix = '!')
+client = commands.Bot(command_prefix = '!', intents=discord.Intents.all())
+slash = SlashCommand(client, sync_commands = True)
 
 @client.event
 async def on_ready():
-    await client.change_presence(activity=discord.Game(name=f'{ client.command_prefix }help { BIBLE_BOT_VERSION }'))
+    await client.change_presence(activity = discord.Game(name=f'{ client.command_prefix }help { BIBLE_BOT_VERSION }'))
     print(f'{ client.user } has connected to Discord!')
 
 @client.event
@@ -81,27 +83,22 @@ async def on_message(message):
                     await message.channel.send(embed = embed)
 
     await client.process_commands(message)
-
-@client.command(description = 'Searches the Bible')
-async def search(ctx, *arguments):
-    version = arguments[len(arguments) - 1]
-    if bible_gateway.is_valid_version(version):
-        query = arguments[:len(arguments) - 1]
-    else:
-        query = arguments
-        version = DEFAULT_VERSION
+    
+@slash.slash(name = 'search', description = 'Searches the Bible', guild_ids = [ 842845804451594241 ])
+async def search(ctx, version, query):
+    await ctx.send('Searching for instances...')
     results = bible_gateway.search(query, version)
     m = menus.MenuPages(source = search_paginator.SearchPaginator(results, query, BIBLE_BOT_VERSION), clear_reactions_after = True)
     await m.start(ctx)
 
-@client.command(description = 'Sets the preferred bible translation')
+@slash.slash(name = 'setversion', description = 'Sets the preferred bible translation', guild_ids = [ 842845804451594241 ])
 async def setversion(ctx, version):
     global DEFAULT_VERSION
     DEFAULT_VERSION = version
     await ctx.send(f'Set default version to { version }!')
 
 
-@client.command(description = 'Checks the latency')
+@slash.slash(name = 'ping', description = 'Checks the latency', guild_ids = [ 842845804451594241 ])
 async def ping(ctx):
     await ctx.send(f'Pong! { round(client.latency * 1000) }ms ')
 
